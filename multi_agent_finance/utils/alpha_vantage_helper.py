@@ -29,9 +29,9 @@ def fetch_alpha_vantage_data(symbol: str, api_key: str, period: str = "1y") -> O
 
     try:
         # Determinar função baseada no período
-        # Para períodos <= 3 meses: TIME_SERIES_DAILY
-        # Para períodos > 3 meses: TIME_SERIES_DAILY (compact = últimos 100 dias) ou full
-        outputsize = "compact" if period in ["1mo", "3mo"] else "full"
+        # NOTA: outputsize=full é PREMIUM. API gratuita só permite compact (100 dias)
+        # Usamos sempre compact e filtramos depois
+        outputsize = "compact"  # Sempre compact para chaves gratuitas
 
         # 1. Buscar histórico de preços (TIME_SERIES_DAILY)
         url_daily = f"https://www.alphavantage.co/query"
