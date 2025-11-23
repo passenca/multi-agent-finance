@@ -123,6 +123,21 @@ def render_sidebar():
         st.markdown("---")
         st.image("https://via.placeholder.com/300x100/1f77b4/ffffff?text=Multi-Agent+System", width='stretch')
 
+        # Status de Configuração das APIs
+        from utils.data_fetcher import ALPHA_VANTAGE_KEY
+        st.markdown("### 🔑 Status das APIs")
+        if ALPHA_VANTAGE_KEY:
+            st.success("Alpha Vantage: Configurada")
+        else:
+            st.error("Alpha Vantage: NÃO configurada")
+            with st.expander("Como configurar?"):
+                st.markdown("""
+                **Para obter dados reais, configure a chave Alpha Vantage:**
+                1. Obtenha uma chave gratuita em: [alphavantage.co](https://www.alphavantage.co/support/#api-key)
+                2. No Streamlit Cloud: Settings → Secrets
+                3. Adicione: `ALPHA_VANTAGE_KEY = "sua_chave"`
+                """)
+
         st.markdown("### ⚙️ Configurações")
 
         # Perfis pré-definidos
@@ -196,7 +211,19 @@ def render_sidebar():
 def fetch_stock_data(symbol, period):
     """Busca dados do ativo com cache."""
     fetcher = DataFetcher()
-    return fetcher.fetch_all_data(symbol, period)
+    data = fetcher.fetch_all_data(symbol, period)
+
+    # Adicionar informação de debug sobre a fonte dos dados
+    if data:
+        source = data.get('source', 'Unknown')
+        if source == 'Yahoo Finance':
+            st.success(f"Dados obtidos via Yahoo Finance")
+        elif source == 'Alpha Vantage':
+            st.success(f"Dados obtidos via Alpha Vantage")
+        else:
+            st.warning(f"Modo DEMO ativo - dados simulados")
+
+    return data
 
 
 def create_agents(weights):
