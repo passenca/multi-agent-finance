@@ -46,19 +46,40 @@ def fetch_alpha_vantage_data(symbol: str, api_key: str, period: str = "1y") -> O
         response.raise_for_status()
         data_daily = response.json()
 
+        # DEBUG: Mostrar chaves retornadas pela API
+        print(f"[ALPHA VANTAGE DEBUG] Chaves na resposta: {list(data_daily.keys())}")
+
         # Verificar se houve erro
         if "Error Message" in data_daily:
-            print(f"[ALPHA VANTAGE ERRO] {data_daily['Error Message']}")
+            error_msg = data_daily['Error Message']
+            print(f"[ALPHA VANTAGE ERRO] {error_msg}")
+            try:
+                import streamlit as st
+                st.error(f"Alpha Vantage API Error: {error_msg}")
+            except:
+                pass
             return None
 
         if "Note" in data_daily:  # Rate limit atingido
-            print(f"[ALPHA VANTAGE LIMITE] {data_daily['Note']}")
+            note_msg = data_daily['Note']
+            print(f"[ALPHA VANTAGE LIMITE] {note_msg}")
+            try:
+                import streamlit as st
+                st.warning(f"Alpha Vantage Rate Limit: {note_msg}")
+            except:
+                pass
             return None
 
         # Converter para DataFrame
         time_series = data_daily.get("Time Series (Daily)", {})
         if not time_series:
             print(f"[ALPHA VANTAGE] Sem dados de preços para {symbol}")
+            print(f"[ALPHA VANTAGE DEBUG] Resposta completa: {data_daily}")
+            try:
+                import streamlit as st
+                st.error(f"Alpha Vantage: Sem 'Time Series (Daily)' na resposta. Chaves recebidas: {list(data_daily.keys())}")
+            except:
+                pass
             return None
 
         # Criar DataFrame de preços
