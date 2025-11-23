@@ -49,6 +49,19 @@ def fetch_alpha_vantage_data(symbol: str, api_key: str, period: str = "1y") -> O
         # DEBUG: Mostrar chaves retornadas pela API
         print(f"[ALPHA VANTAGE DEBUG] Chaves na resposta: {list(data_daily.keys())}")
 
+        # Verificar se há mensagem informativa
+        if "Information" in data_daily:
+            info_msg = data_daily['Information']
+            print(f"[ALPHA VANTAGE INFO] {info_msg}")
+            try:
+                import streamlit as st
+                st.warning(f"Alpha Vantage Info: {info_msg}")
+            except:
+                pass
+            # Se só tem Information, retorna None
+            if len(data_daily) == 1:
+                return None
+
         # Verificar se houve erro
         if "Error Message" in data_daily:
             error_msg = data_daily['Error Message']
