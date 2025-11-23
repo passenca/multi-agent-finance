@@ -7,6 +7,12 @@ import plotly.graph_objects as go
 import plotly.express as px
 from datetime import datetime
 import sys
+from pathlib import Path
+
+# Adiciona o diretório do app ao sys.path para imports funcionarem
+app_dir = Path(__file__).parent
+if str(app_dir) not in sys.path:
+    sys.path.insert(0, str(app_dir))
 
 # Importa módulos locais
 from agents.technical_agent import TechnicalAgent
