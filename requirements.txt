@@ -1,0 +1,28 @@
+# Core dependencies
+yfinance>=0.2.36
+pandas>=2.0.0
+numpy>=1.24.0
+requests>=2.31.0
+python-dotenv>=1.0.0
+
+# Optional: Para análise técnica avançada
+# pandas-ta>=0.3.14b
+
+# Optional: Para análise de sentimento (se implementar)
+# newsapi-python>=0.2.7
+# tweepy>=4.14.0
+# transformers>=4.30.0  # Para FinBERT sentiment
+# torch>=2.0.0
+
+# Optional: Para dados macroeconómicos
+# fredapi>=0.5.0  # Federal Reserve Economic Data
+# pandas-datareader>=0.10.0
+
+# Web Interface
+streamlit>=1.32.0
+plotly>=5.18.0
+
+# Development
+# pytest>=7.4.0
+# black>=23.0.0
+# flake8>=6.0.0
