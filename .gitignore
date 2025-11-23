@@ -38,6 +38,8 @@ venv/
 data/*.csv
 data/*.db
 data/*.sqlite
+*.db
+*.sqlite
 *.log
 
 # Configurações locais
