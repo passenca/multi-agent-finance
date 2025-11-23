@@ -23,10 +23,26 @@ session.headers.update({
 
 # ===================== CONFIGURAÇÃO =====================
 # ALPHA VANTAGE API KEY
-# Opção 1: Definir aqui diretamente (para testes rápidos)
-# Opção 2: Usar variável de ambiente ALPHA_VANTAGE_KEY
 # Obter chave gratuita em: https://www.alphavantage.co/support/#api-key
-ALPHA_VANTAGE_KEY = os.getenv('ALPHA_VANTAGE_KEY', None)  # None = não configurada
+# Suporta tanto ambiente local (.env) como Streamlit Cloud (st.secrets)
+def get_alpha_vantage_key():
+    """Obtém a chave Alpha Vantage de diferentes fontes."""
+    # Tentar primeiro do ambiente local (.env)
+    key = os.getenv('ALPHA_VANTAGE_KEY', None)
+    if key:
+        return key
+
+    # Tentar do Streamlit Cloud Secrets
+    try:
+        import streamlit as st
+        if hasattr(st, 'secrets') and 'ALPHA_VANTAGE_KEY' in st.secrets:
+            return st.secrets['ALPHA_VANTAGE_KEY']
+    except:
+        pass
+
+    return None
+
+ALPHA_VANTAGE_KEY = get_alpha_vantage_key()
 
 # Modo demo - usar apenas se todas as APIs falharem
 DEMO_MODE = False  # Agora só ativa se TUDO falhar
@@ -178,38 +194,42 @@ class DataFetcher:
         """
         # Se modo demo forçado está ativo, retorna dados simulados
         if DEMO_MODE:
-            print(f"[DEMO MODE] Gerando dados de demonstração para {symbol}")
+            print(f"⚠️ [DEMO MODE FORÇADO] Gerando dados de demonstração para {symbol}")
             return self._generate_demo_data(symbol, period)
 
-        print(f"Buscando dados para {symbol}...")
+        print(f"🔍 Buscando dados para {symbol}...")
+        print(f"🔑 Alpha Vantage Key configurada: {'✅ SIM' if ALPHA_VANTAGE_KEY else '❌ NÃO'}")
 
         # ===== TENTATIVA 1: YAHOO FINANCE (padrão) =====
         if not USE_ALPHA_VANTAGE_FIRST:
+            print(f"📊 [1/3] Tentando Yahoo Finance...")
             data = self._try_yahoo_finance(symbol, period)
             if data and not data.get('price_history', pd.DataFrame()).empty:
-                print(f"[SUCESSO] Dados obtidos via Yahoo Finance")
+                print(f"✅ [SUCESSO] Dados obtidos via Yahoo Finance")
                 return data
-            print(f"[FALLBACK] Yahoo Finance falhou, tentando Alpha Vantage...")
+            print(f"⚠️ [FALLBACK] Yahoo Finance falhou, tentando Alpha Vantage...")
 
         # ===== TENTATIVA 2: ALPHA VANTAGE =====
         if ALPHA_VANTAGE_KEY:
+            print(f"📊 [2/3] Tentando Alpha Vantage...")
             data = self._try_alpha_vantage(symbol, period)
             if data and not data.get('price_history', pd.DataFrame()).empty:
-                print(f"[SUCESSO] Dados obtidos via Alpha Vantage")
+                print(f"✅ [SUCESSO] Dados obtidos via Alpha Vantage")
                 return data
-            print(f"[FALLBACK] Alpha Vantage também falhou")
+            print(f"⚠️ [FALLBACK] Alpha Vantage também falhou")
         else:
-            print(f"[AVISO] Alpha Vantage API key não configurada")
+            print(f"❌ [AVISO] Alpha Vantage API key NÃO CONFIGURADA - Configure em Streamlit Cloud Secrets!")
 
         # ===== TENTATIVA 3: YAHOO FINANCE (se Alpha foi primeiro) =====
         if USE_ALPHA_VANTAGE_FIRST:
+            print(f"📊 [3/3] Tentando Yahoo Finance (2ª tentativa)...")
             data = self._try_yahoo_finance(symbol, period)
             if data and not data.get('price_history', pd.DataFrame()).empty:
-                print(f"[SUCESSO] Dados obtidos via Yahoo Finance (2ª tentativa)")
+                print(f"✅ [SUCESSO] Dados obtidos via Yahoo Finance (2ª tentativa)")
                 return data
 
         # ===== FALLBACK FINAL: DEMO MODE =====
-        print(f"[DEMO MODE] Todas as APIs falharam, usando dados simulados")
+        print(f"⚠️ [DEMO MODE AUTOMÁTICO] Todas as APIs falharam, usando dados simulados")
         return self._generate_demo_data(symbol, period)
 
     def _try_yahoo_finance(self, symbol: str, period: str) -> Optional[Dict[str, Any]]:
