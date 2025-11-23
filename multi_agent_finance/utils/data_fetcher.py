@@ -287,10 +287,22 @@ class DataFetcher:
 
             print(f"[ALPHA VANTAGE] Tentando buscar dados de {symbol}...")
 
+            # Tentar importar streamlit para mostrar progresso na interface
+            try:
+                import streamlit as st
+                st.info(f"Buscando dados via Alpha Vantage... (pode demorar alguns segundos)")
+            except:
+                pass
+
             result = fetch_alpha_vantage_data(symbol, ALPHA_VANTAGE_KEY, period)
 
             if not result:
                 print(f"[ALPHA VANTAGE] Falhou ao buscar dados")
+                try:
+                    import streamlit as st
+                    st.error(f"Alpha Vantage retornou dados vazios ou erro")
+                except:
+                    pass
                 return None
 
             # Adicionar campos que faltam para compatibilidade com formato Yahoo Finance
@@ -304,9 +316,19 @@ class DataFetcher:
 
         except ImportError as e:
             print(f"[ALPHA VANTAGE ERRO] Módulo alpha_vantage_helper não encontrado: {e}")
+            try:
+                import streamlit as st
+                st.error(f"Erro ao importar alpha_vantage_helper: {e}")
+            except:
+                pass
             return None
         except Exception as e:
             print(f"[ALPHA VANTAGE ERRO] Falha geral: {e}")
+            try:
+                import streamlit as st
+                st.error(f"Erro ao buscar dados Alpha Vantage: {e}")
+            except:
+                pass
             return None
 
     def _prepare_sector_data(self, ticker: Optional[yf.Ticker], fundamentals: Dict[str, Any]) -> Dict[str, Any]:

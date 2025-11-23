@@ -83,7 +83,8 @@ def fetch_alpha_vantage_data(symbol: str, api_key: str, period: str = "1y") -> O
 
         # 2. Buscar dados fundamentais (OVERVIEW)
         # Delay para evitar rate limit (5 chamadas/minuto para API gratuita)
-        time.sleep(12)  # 12 segundos = 5 chamadas/minuto
+        print(f"[ALPHA VANTAGE] Aguardando antes de buscar fundamentals...")
+        time.sleep(3)  # Reduzido de 12s para 3s
 
         url_overview = f"https://www.alphavantage.co/query"
         params_overview = {
