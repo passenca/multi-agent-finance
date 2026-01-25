@@ -125,6 +125,9 @@ def render_sidebar():
 
         # Status de Configuração das APIs
         from utils.data_fetcher import ALPHA_VANTAGE_KEY
+        from utils.fred_helper import get_fred_api_key
+        fred_key = get_fred_api_key()
+
         st.markdown("### 🔑 Status das APIs")
         if ALPHA_VANTAGE_KEY:
             st.success("Alpha Vantage: Configurada")
@@ -136,6 +139,18 @@ def render_sidebar():
                 1. Obtenha uma chave gratuita em: [alphavantage.co](https://www.alphavantage.co/support/#api-key)
                 2. No Streamlit Cloud: Settings → Secrets
                 3. Adicione: `ALPHA_VANTAGE_KEY = "sua_chave"`
+                """)
+
+        if fred_key:
+            st.success("FRED API: Configurada")
+        else:
+            st.warning("FRED API: NÃO configurada (dados macro placeholder)")
+            with st.expander("Como configurar?"):
+                st.markdown("""
+                **Para dados macroeconómicos reais, configure a chave FRED:**
+                1. Obtenha uma chave gratuita em: [fred.stlouisfed.org](https://fred.stlouisfed.org/docs/api/api_key.html)
+                2. No Streamlit Cloud: Settings → Secrets
+                3. Adicione: `FRED_API_KEY = "sua_chave"`
                 """)
 
         st.markdown("### ⚙️ Configurações")

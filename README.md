@@ -1,17 +1,27 @@
-# 📈 Análise de Mercado Financeiro
+# 🤖 Sistema Multi-Agente de Análise Financeira
 
-Aplicação web para acompanhar a evolução dos mercados financeiros, realizando análise fundamental e técnica das ações do S&P 500 e NASDAQ, identificando ações com maior potencial de crescimento nos próximos 5 anos.
+Sistema avançado de análise de investimentos que utiliza **6 agentes especializados** trabalhando em paralelo para fornecer análises abrangentes de ações e ETFs.
 
-## 🎯 Funcionalidades
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.32%2B-red)](https://streamlit.io/)
+[![License](https://img.shields.io/badge/License-Educational-green)](LICENSE)
 
-- **Análise Técnica**: RSI, MACD, Médias Móveis, Bandas de Bollinger, Estocástico, ATR
-- **Análise Fundamental**: P/E Ratio, P/B Ratio, ROE, Margem de Lucro, Dividend Yield, Crescimento
-- **Sistema de Pontuação**: Combina análises técnica e fundamental para ranquear ações
-- **Dashboard Interativo**: Interface web amigável construída com Streamlit
-- **Watchlist**: Acompanhe suas ações favoritas
-- **Atualizações Diárias**: Mantenha-se atualizado com os últimos dados do mercado
+## 📋 Visão Geral
 
-## 🚀 Como Começar
+Este sistema implementa uma **arquitetura multi-agente** onde diferentes "especialistas" analisam aspectos distintos de um ativo financeiro, combinando seus insights numa recomendação final ponderada e ajustável.
+
+### 🎯 Agentes Especializados
+
+| Agente | Foco | Principais Métricas |
+|--------|------|---------------------|
+| 📈 **Técnico** | Análise técnica clássica | RSI, MACD, Médias Móveis, Bollinger Bands, Volume |
+| 📊 **Fundamental** | Saúde financeira | P/E, P/B, ROE, ROA, Margens, Crescimento, Dividendos |
+| 💬 **Sentimento** | Percepção de mercado | Notícias, Social Media, Ratings, Insider Trading |
+| 🌍 **Macroeconómico** | Contexto económico | Juros, Inflação, PIB, Emprego, Regime de Mercado |
+| ⚠️ **Risco** | Perfil de risco | Volatilidade, Sharpe Ratio, Drawdown, VaR, Beta |
+| 🏢 **Setorial** | Análise competitiva | Comparação Peers, Market Share, Tendências Setor |
+
+## 🚀 Quick Start
 
 ### Pré-requisitos
 
@@ -21,6 +31,11 @@ Aplicação web para acompanhar a evolução dos mercados financeiros, realizand
 ### Instalação
 
 1. **Clone ou baixe este repositório**
+
+```bash
+git clone <seu-repositorio>
+cd claude_projects
+```
 
 2. **Crie um ambiente virtual (recomendado)**
 
@@ -40,161 +55,326 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-**Nota sobre TA-Lib**: A biblioteca `ta-lib` pode requerer instalação manual em alguns sistemas:
+4. **Configure a API Alpha Vantage (opcional mas recomendado)**
 
-**Windows:**
 ```bash
-# Baixe o arquivo wheel apropriado de:
-# https://www.lfd.uci.edu/~gohlke/pythonlibs/#ta-lib
-pip install TA_Lib‑0.4.XX‑cpXX‑cpXX‑win_amd64.whl
+# Copiar ficheiro de exemplo
+cp multi_agent_finance/.env.example multi_agent_finance/.env
+
+# Editar .env e adicionar sua chave
+# ALPHA_VANTAGE_KEY=sua_chave_aqui
 ```
 
-**Linux:**
-```bash
-wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
-tar -xzf ta-lib-0.4.0-src.tar.gz
-cd ta-lib/
-./configure --prefix=/usr
-make
-sudo make install
-pip install ta-lib
-```
-
-**Mac:**
-```bash
-brew install ta-lib
-pip install ta-lib
-```
-
-Se encontrar problemas com TA-Lib, você pode comentar a linha correspondente no `requirements.txt` e usar apenas `pandas-ta`.
+Obter chave gratuita em: [alphavantage.co](https://www.alphavantage.co/support/#api-key)
 
 ### Executar a Aplicação
 
+**Interface Web (Streamlit):**
 ```bash
 streamlit run app.py
 ```
 
-A aplicação será aberta automaticamente no seu navegador em `http://localhost:8501`
+A aplicação abrirá automaticamente em `http://localhost:8501`
 
-## 📖 Como Usar
+**Demo CLI (testes rápidos):**
+```bash
+# Análise padrão (AAPL)
+python multi_agent_finance/demo.py
 
-1. **Selecione o Índice**: Escolha entre S&P 500, NASDAQ ou ambos na barra lateral
-2. **Configure o Período**: Selecione o período de análise (1 mês a 5 anos)
-3. **Ajuste Filtros**: Defina pontuação mínima e filtros de análise
-4. **Atualize Dados**: Clique em "Atualizar Dados" para buscar as informações mais recentes
-5. **Analise Resultados**: Visualize as ações ranqueadas e explore os detalhes
+# Ação específica
+python multi_agent_finance/demo.py --symbol MSFT
 
-### Abas da Aplicação
+# Comparar múltiplas ações
+python multi_agent_finance/demo.py --compare AAPL,MSFT,GOOGL,NVDA
 
-- **Dashboard Principal**: Visão geral com métricas e top ações
-- **Análise Técnica**: Indicadores técnicos detalhados e gráficos
-- **Análise Fundamental**: Métricas fundamentais e saúde financeira
-- **Watchlist**: Suas ações em observação
+# Modo interativo
+python multi_agent_finance/demo.py --interactive
+```
 
-## 📊 Indicadores Implementados
+## 🏗️ Arquitetura
 
-### Análise Técnica
+### Estrutura do Sistema
 
-- **Médias Móveis**: SMA (20, 50, 200) e EMA (12, 26)
-- **RSI**: Índice de Força Relativa
-- **MACD**: Convergência/Divergência de Médias Móveis
-- **Bandas de Bollinger**: Volatilidade e níveis de preço
-- **Estocástico**: Momentum de preço
-- **ATR**: Average True Range (volatilidade)
+```
+┌─────────────────────────────────────────────┐
+│          AgentOrchestrator                  │
+│   (Combina insights com pesos ajustáveis)   │
+└─────────────────────────────────────────────┘
+                    ▲
+                    │
+        ┌───────────┴───────────┐
+        │                       │
+┌───────▼────────┐    ┌────────▼────────┐
+│ Technical      │    │ Fundamental     │
+│ Agent          │    │ Agent           │
+└────────────────┘    └─────────────────┘
+        │                       │
+┌───────▼────────┐    ┌────────▼────────┐
+│ Macro Agent    │    │ Sentiment Agent │
+└────────────────┘    └─────────────────┘
+        │                       │
+┌───────▼────────┐    ┌────────▼────────┐
+│ Risk Agent     │    │ Sector Agent    │
+└────────────────┘    └─────────────────┘
+```
 
-### Análise Fundamental
+### Como Funciona
 
-- **P/E Ratio**: Relação Preço/Lucro
-- **P/B Ratio**: Relação Preço/Valor Contábil
-- **ROE**: Retorno sobre Patrimônio Líquido
-- **Margem de Lucro**: Rentabilidade
-- **Dividend Yield**: Taxa de dividendos
-- **Crescimento**: Crescimento de receita e lucros
+1. **Coleta de Dados Multi-Fonte**
+   - 🥇 Yahoo Finance (yfinance) - fonte primária
+   - 🥈 Alpha Vantage API - fallback automático
+   - 🥉 Modo Demo - dados simulados (último recurso)
 
-## 🔧 Estrutura do Projeto
+2. **Análise Paralela**
+   - Cada agente analisa os dados de forma independente
+   - Gera score de **-100** (muito bearish) a **+100** (muito bullish)
+   - Calcula nível de confiança (**0** a **1**)
+
+3. **Combinação Inteligente**
+   - Orquestrador aplica pesos configuráveis a cada agente
+   - Combina scores considerando confiança
+   - Gera recomendação final com explicação detalhada
+
+4. **Recomendação Final**
+   - **COMPRA FORTE**: Score +80 a +100
+   - **COMPRA**: Score +30 a +79
+   - **MANTER**: Score -29 a +29
+   - **VENDA**: Score -79 a -30
+   - **VENDA FORTE**: Score -100 a -80
+
+## 📊 Interface Web (Streamlit)
+
+### Páginas Principais
+
+#### 🔍 Análise Individual
+Análise profunda de uma ação específica com:
+- Dashboard com métricas-chave
+- Insights detalhados de cada agente
+- Gráficos de preço e indicadores técnicos
+- Recomendação final com nível de confiança
+
+#### 📊 Comparação de Ações
+Compare múltiplas ações lado a lado:
+- Scores comparativos de todos os agentes
+- Gráficos de performance
+- Ranking por critérios específicos
+
+### Perfis de Investimento
+
+Ajuste automático de pesos dos agentes conforme seu perfil:
+
+| Perfil | Foco | Melhor Para |
+|--------|------|-------------|
+| **Conservador** | Risco + Fundamentals | Investidores de longo prazo |
+| **Moderado** | Balanceado | Investidores equilibrados |
+| **Agressivo** | Técnica + Momentum | Traders ativos |
+| **Day Trader** | Técnica + Sentimento | Trading intraday |
+| **Personalizado** | Ajuste manual | Total controle |
+
+## 🎛️ Customização
+
+### Ajustar Pesos Programaticamente
+
+```python
+from multi_agent_finance.agents.technical_agent import TechnicalAgent
+from multi_agent_finance.agents.fundamental_agent import FundamentalAgent
+from multi_agent_finance.orchestrator.orchestrator import AgentOrchestrator
+
+# Perfil conservador
+agents = [
+    TechnicalAgent(weight=0.5),
+    FundamentalAgent(weight=1.5),    # Peso maior
+    RiskAgent(weight=1.8),            # Peso maior
+    # ... outros agentes
+]
+
+orchestrator = AgentOrchestrator(agents)
+analysis = orchestrator.analyze("AAPL", data)
+```
+
+### Criar Agente Personalizado
+
+```python
+from multi_agent_finance.agents.base_agent import BaseAgent, AgentInsight
+
+class CustomAgent(BaseAgent):
+    def __init__(self, weight=1.0):
+        super().__init__(name="Custom Analyst", weight=weight)
+
+    def analyze(self, symbol, data):
+        # Sua lógica aqui
+        score = 50  # -100 a +100
+        confidence = 0.8  # 0 a 1
+        reasoning = "Sua explicação detalhada"
+
+        return AgentInsight(
+            agent_name=self.name,
+            score=score,
+            confidence=confidence,
+            reasoning=reasoning,
+            metrics={"custom_metric": 42}
+        )
+```
+
+## 📖 Interpretação dos Resultados
+
+### Scores dos Agentes
+
+Cada agente retorna um score entre **-100** e **+100**:
+- **Positivo**: Bullish (favorável à compra)
+- **Negativo**: Bearish (favorável à venda)
+- **Próximo de 0**: Neutro
+
+### Nível de Confiança
+
+Indica a qualidade/completude dos dados:
+- **> 80%**: Alta confiança (dados completos, sinais claros)
+- **50-80%**: Confiança moderada
+- **< 50%**: Baixa confiança (dados incompletos ou sinais divergentes)
+
+### Recomendação Final
+
+Combina scores ponderados de todos os agentes:
+- Considera tanto o score quanto a confiança
+- Agentes com peso maior têm mais influência
+- Resultado é traduzido em recomendação textual
+
+## 📁 Estrutura do Projeto
 
 ```
 claude_projects/
-│
-├── app.py                      # Aplicação principal Streamlit
-├── requirements.txt            # Dependências Python
-├── README.md                   # Este arquivo
-├── CLAUDE.md                   # Documentação para Claude Code
-├── .gitignore                  # Arquivos a ignorar no Git
-│
-├── src/                        # Código fonte
-│   ├── __init__.py
-│   ├── data_collector.py       # Coleta de dados financeiros
-│   ├── technical_analysis.py   # Análise técnica
-│   ├── fundamental_analysis.py # Análise fundamental
-│   └── scoring.py              # Sistema de pontuação
-│
-├── data/                       # Dados locais (cache)
-├── config/                     # Configurações
-└── tests/                      # Testes (futuro)
+├── app.py                           # Interface Streamlit (ponto de entrada)
+├── multi_agent_finance/             # Sistema multi-agente
+│   ├── agents/                      # 6 agentes especializados
+│   │   ├── base_agent.py            # Classe base
+│   │   ├── technical_agent.py
+│   │   ├── fundamental_agent.py
+│   │   ├── sentiment_agent.py
+│   │   ├── macro_agent.py
+│   │   ├── risk_agent.py
+│   │   └── sector_agent.py
+│   ├── orchestrator/
+│   │   └── orchestrator.py          # Combina análises
+│   ├── utils/
+│   │   ├── data_fetcher.py          # Busca dados (multi-fonte)
+│   │   └── alpha_vantage_helper.py  # Helper Alpha Vantage
+│   ├── demo.py                      # CLI para testes
+│   └── README.md                    # Documentação detalhada
+├── requirements.txt                 # Dependências
+├── CLAUDE.md                        # Guia para Claude Code
+└── README.md                        # Este ficheiro
 ```
 
-## ⚙️ Personalização
+## 🔧 Tecnologias Utilizadas
 
-### Ajustar Pesos da Análise
+- **Python 3.8+**: Linguagem principal
+- **Streamlit**: Interface web interativa
+- **yfinance**: Dados do Yahoo Finance
+- **pandas**: Manipulação de dados
+- **numpy**: Computação numérica
+- **plotly**: Gráficos interativos
+- **requests**: Chamadas HTTP (Alpha Vantage)
+- **python-dotenv**: Gestão de variáveis de ambiente
 
-No arquivo `src/scoring.py`, você pode ajustar os pesos da análise técnica vs fundamental:
+## ⚠️ Limitações Conhecidas
 
-```python
-scoring = ScoringSystem(
-    technical_weight=0.4,    # 40% técnica
-    fundamental_weight=0.6   # 60% fundamental
-)
-```
+1. **APIs Externas**:
+   - Yahoo Finance: rate limits não documentados
+   - Alpha Vantage: 25 chamadas/dia (plano gratuito)
+   - Solução: cache de 6h, delays entre chamadas
 
-### Adicionar Mais Ações
+2. **Agentes Simulados**:
+   - Sentiment Agent: sem integração real com NewsAPI
+   - Macro Agent: dados macro simulados (sem FRED API)
 
-No arquivo `src/data_collector.py`, expanda as listas `SP500_SYMBOLS` e `NASDAQ_SYMBOLS` com mais símbolos.
+3. **Sem Persistência**:
+   - Cache apenas em memória
+   - Dados perdidos ao reiniciar
 
-## ⚠️ Avisos Importantes
+4. **Sem Backtesting**:
+   - Sistema não testa estratégias historicamente
 
-- **Não é aconselhamento financeiro**: Esta aplicação é apenas para fins educacionais
-- **Consulte profissionais**: Sempre consulte um consultor financeiro qualificado
-- **Dados podem estar desatualizados**: Verifique sempre em fontes oficiais
-- **Uso de APIs gratuitas**: Os dados vêm do Yahoo Finance (yfinance) que tem limitações
+## 🔮 Roadmap
+
+### Curto Prazo
+- [ ] Adicionar testes unitários
+- [ ] Implementar logging estruturado
+- [ ] Persistência em SQLite
+- [ ] Melhorar tratamento de erros
+
+### Médio Prazo
+- [ ] Integrar NewsAPI para sentiment real
+- [ ] Integrar FRED API para dados macro
+- [ ] Sistema de alertas (email/Telegram)
+- [ ] Backtesting de estratégias
+
+### Longo Prazo
+- [ ] Machine Learning para otimizar pesos
+- [ ] Análise de opções e derivativos
+- [ ] Portfolio optimization
+- [ ] Suporte para criptomoedas
 
 ## 🐛 Solução de Problemas
 
-### Erro ao instalar TA-Lib
-Se tiver problemas com TA-Lib, você pode remover essa dependência e usar apenas pandas-ta, que oferece funcionalidades similares.
+### Erro ao instalar dependências
+```bash
+# Certifique-se de estar no ambiente virtual
+pip install --upgrade pip
+pip install -r requirements.txt
+```
 
-### Erro "Rate limit exceeded"
-O Yahoo Finance tem limites de requisições. Adicione pausas entre as requisições ou use a aplicação com menos frequência.
+### Erro "No data found" ou rate limit
+- Yahoo Finance tem limites: aguarde alguns minutos
+- Configure Alpha Vantage como fallback
+- Em último caso, use modo demo
 
-### Dados não aparecem
-Verifique sua conexão com a internet e tente novamente após alguns minutos.
+### Aplicação não inicia
+```bash
+# Verifique se Streamlit está instalado
+streamlit --version
 
-## 🔮 Próximas Funcionalidades
+# Reinstale se necessário
+pip install streamlit --upgrade
+```
 
-- [ ] Persistência de dados em banco de dados SQLite
-- [ ] Alertas por email para oportunidades de compra
-- [ ] Backtesting de estratégias
-- [ ] Análise de correlação entre ações
-- [ ] Exportar relatórios em PDF
-- [ ] Integração com mais fontes de dados
-- [ ] Machine Learning para previsões
+## 📚 Documentação Adicional
 
-## 📝 Licença
+- **[CLAUDE.md](CLAUDE.md)**: Guia completo para desenvolvimento
+- **[multi_agent_finance/README.md](multi_agent_finance/README.md)**: Documentação técnica detalhada
+- **[DEPLOY_GUIDE.md](DEPLOY_GUIDE.md)**: Guia para deploy no Streamlit Cloud
 
-Este projeto é de código aberto e está disponível para uso educacional.
+## ⚠️ Avisos Importantes
+
+**DISCLAIMER**:
+
+Este sistema é para fins **educacionais e informativos** apenas.
+
+- ❌ **NÃO** constitui aconselhamento financeiro
+- ❌ **NÃO** garante retornos ou resultados
+- ✅ Sempre faça sua própria pesquisa (DYOR)
+- ✅ Investimentos envolvem risco de perda de capital
+- ✅ Consulte profissionais certificados para decisões de investimento
+- ✅ Performance passada não garante resultados futuros
 
 ## 🤝 Contribuições
 
-Contribuições são bem-vindas! Sinta-se à vontade para:
-- Reportar bugs
-- Sugerir novas funcionalidades
-- Melhorar a documentação
-- Submeter pull requests
+Contribuições são bem-vindas! Áreas de interesse:
+- Novos agentes especializados
+- Integração de novas fontes de dados
+- Melhorias nos algoritmos de análise
+- Testes e documentação
+- Casos de uso interessantes
 
-## 📧 Contato
+## 📝 Licença
 
-Para dúvidas ou sugestões, abra uma issue no repositório.
+Este projeto é de código aberto para fins educacionais.
+
+## 📧 Contacto
+
+Para dúvidas, sugestões ou feedback sobre este sistema multi-agente, abra uma issue no repositório.
 
 ---
 
-**Disclaimer**: Esta ferramenta não constitui aconselhamento de investimento. Invista por sua própria conta e risco.
+**Construído com Python, Streamlit, yfinance e muito café ☕**
+
+*"The goal of a successful trader is to make the best trades. Money is secondary."* - Alexander Elder
